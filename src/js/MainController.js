@@ -222,6 +222,20 @@
           }
         });
       }
+      
+      var menu = $('#menu-button');  
+      var pulldown = $('#pulldown'); 
+      $('.ga-toggle-tool').click(function() {
+          pulldown.one('hidden.bs.collapse', function() {
+            $scope.globals.isDrawActive = !$scope.globals.isDrawActive;
+            $scope.globals.isMeasureActive = false;
+            $scope.$apply();
+            $timeout(function() {
+              menu.click();
+            }, 50, false);
+          });
+          menu.click();
+      });
 
       // An appcache update is available.
       if ($window.applicationCache) { // IE9
