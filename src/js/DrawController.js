@@ -38,9 +38,6 @@
           {id: 'point',   iconClass: 'icon-ga-point'},
           {id: 'line',    iconClass: 'icon-ga-line'},
           {id: 'polygon', iconClass: 'icon-ga-polygon'},
-          {id: 'text',    iconClass: 'icon-ga-text'},
-          {id: 'modify',  iconClass: 'icon-ga-edit'},
-          {id: 'delete',  iconClass: 'icon-ga-delete'}
         ];
 
         $scope.options.colors = [
@@ -63,6 +60,8 @@
         $scope.options.icons = [
             
             // Basics
+            {id: 'marker'},
+            {id: 'marker-stroked'},
             {id: 'circle'},
             {id: 'circle-stroked'},
             {id: 'square'},
@@ -71,8 +70,6 @@
             {id: 'triangle-stroked'},
             {id: 'star'},
             {id: 'star-stroked'},
-            {id: 'marker'},
-            {id: 'marker-stroked'},
             {id: 'cross'},
             {id: 'disability'},
             {id: 'danger'},

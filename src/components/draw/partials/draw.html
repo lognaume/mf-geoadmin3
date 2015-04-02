@@ -1,26 +1,33 @@
 <div>
   <div class="ga-draw-buttons">
-    <button ng-repeat="tool in options.tools"
+    <button title="{{tool.description | translate}}"
+            class="btn btn-defaulti {{tool.iconClass}}"
+            ng-repeat="tool in options.tools"
             ng-click="toggleTool($event, tool)"
-            title="{{tool.description | translate}}"
-            class="{{tool.cssClass}}" ng-class="{'active': options[tool.activeKey]}">
-      <i class="{{tool.iconClass}}"></i>
-      <div translate>{{tool.title}}</div>
+            ng-class="{'active': options[tool.activeKey]}">
     </button>
   </div>
-  <div class="ga-draw-interaction-btns" role="group">
-      <button ng-if="options.isModifyActive" class="btn btn-default pull-left" ng-click="deleteFeatures($event)" translate>draw_delete_selected_features</button>
+  <!--div class="ga-draw-interaction-btns" role="group">
       <button class="btn btn-default pull-right"
-              ng-if="options.showExport"
+              disabled
+              translate>share</button>
+      <button class="btn btn-default pull-right"
+              ng-disabled="!canExport()"
+              ng-click="deleteAllFeatures()"
+              translate>draw_delete_all</button>
+      <button class="btn btn-default pull-right"
               ng-disabled="!canExport()"
               ng-click="exportKml($event)"
               translate>export_kml</button>
-  </div>
+  </div-->
 
 
   <div class="ga-draw-modify popover top" style="display:none;">
     <div class="arrow"></div>
-    <h3 class="popover-title">iFeature properties</h3>
+    <div class="popover-title">
+      <span translate>feature_properties</span>
+      <button class="ga-icon ga-btn icon-remove" ng-click="hide()"></button>
+    </div>
     <div class="popover-content">
       <label ng-if="options.isTextActive || useTextStyle">
         <span translate>{{'modify_text_label'}}:</span> 
