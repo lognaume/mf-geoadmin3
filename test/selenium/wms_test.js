@@ -12,7 +12,7 @@ var runTest = function(cap, driver, target) {
   driver.get(target + '/?lang=de');
   //wait until topics related stuff is loaded. We know this when catalog is there
   driver.findElement(webdriver.By.xpath("//a[contains(text(), 'Grundlagen und Planung')]"));
-  
+
   // Click on "Werkzeuge"
   driver.findElement(webdriver.By.xpath("//a[@id='toolsHeading']")).click();
   // Click on "WMS Import"

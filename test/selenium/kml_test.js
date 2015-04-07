@@ -23,7 +23,7 @@ var runTest = function(cap, driver, target) {
   driver.findElement(webdriver.By.xpath("//*[@id='import-kml-popup']/div[2]/div/div/div[1]/div/div[2]/form/input[1]")).sendKeys('http://opendata.utou.ch/urbanproto/geneva/geo/kml/Routes.kml');
   // Click on "KML Laden"
   driver.findElement(webdriver.By.xpath("//*[@id='import-kml-popup']/div[2]/div/div/div[2]/button")).click();
-  // Check if the KML was correctly parsed 
+  // Check if the KML was correctly parsed
   driver.findElement(webdriver.By.xpath("//*[contains(text(), 'Parsing erfolgreich')]"));
   // Close popup
   driver.findElement(webdriver.By.xpath("//*[@id='import-kml-popup']/div[1]/div[2]/button[3]")).click();
@@ -32,7 +32,7 @@ var runTest = function(cap, driver, target) {
   if(!(cap.browser == "IE" && cap.browser_version == "9.0")) {
     // Check if url is adapted to reflect Bern location
     driver.getCurrentUrl().then(function(url) {
-      assert.ok(val.indexOf(QUERYSTRING_KML) > -1);
+      assert.ok(url.indexOf(QUERYSTRING_KML) > -1);
     });
   }
 }
