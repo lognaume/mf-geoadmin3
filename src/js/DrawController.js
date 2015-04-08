@@ -30,14 +30,14 @@
 
         $scope.options.translate = $translate; // For translation of ng-options
 
-        $scope.options.text = '';
+        $scope.options.name = '';
 
         $scope.options.description = '';
 
         $scope.options.tools = [
           {id: 'point',   iconClass: 'icon-ga-point'},
           {id: 'line',    iconClass: 'icon-ga-line'},
-          {id: 'polygon', iconClass: 'icon-ga-polygon'},
+          {id: 'polygon', iconClass: 'icon-ga-polygon'}
         ];
 
         $scope.options.colors = [
@@ -239,32 +239,21 @@
             zIndex = gaStyleFactory.ZLINE;
           }
           
-          // Drawing text
-          if (($scope.options.isTextActive ||
-              ($scope.options.isModifyActive &&
-                  feature.getGeometry() instanceof ol.geom.Point &&
-                  feature.get('useText'))) &&
-              angular.isDefined($scope.options.text)) {
-
+          // If a name is specified display it as a Text style
+          if ($scope.options.name) {
             text = new ol.style.Text({
               font: gaStyleFactory.FONT,
-              text: $scope.options.text,
+              text: $scope.options.name,
               fill: new ol.style.Fill({
                 color: stroke.getColor()
               }),
               stroke: gaStyleFactory.getTextStroke(stroke.getColor())
             });
-            fill = undefined;
-            stroke = undefined;
-            zIndex = gaStyleFactory.ZTEXT;
           } 
-          feature.set('useText', (!!text));
 
           // Drawing icon
           if (($scope.options.isPointActive ||
-              ($scope.options.isModifyActive &&
-                  feature.getGeometry() instanceof ol.geom.Point &&
-                  feature.get('useIcon'))) &&
+              feature.get('useIcon')) &&
               angular.isDefined($scope.options.icon)) {
 
             icon = new ol.style.Icon({
@@ -274,20 +263,19 @@
             fill = undefined;
             stroke = undefined;
             zIndex = gaStyleFactory.ZICON;
-          } 
-          feature.set('useIcon', (!!icon));
-          
-          if ($scope.options.description) {
-            feature.set('description', $scope.options.description);
           }
+
+          feature.set('useIcon', (!!icon));
+          feature.set('name', $scope.options.name);
+          feature.set('description', $scope.options.description);
+
 
           var styles = [
             new ol.style.Style({
               fill: fill,
               stroke: stroke,
               text: text,
-              image: icon || ((!text) ? sketchCircle :
-                  gaStyleFactory.getStyle('transparentCircle')),
+              image: icon || sketchCircle,
               zIndex: zIndex
             })
           ];

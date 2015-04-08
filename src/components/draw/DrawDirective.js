@@ -14,6 +14,39 @@
     function($timeout, $translate, $window, $rootScope, gaBrowserSniffer,
         gaDefinePropertiesForLayer, gaDebounce, gaLayerFilters, gaExportKml,
         gaMapUtils) {
+
+        // Find the corresponding style
+        var findIcon = function(olIcon, icons) {
+          var id = olIcon.getSrc();
+          for (var i = 0; i < icons.length; i++) {
+            var regex = new RegExp('/' + icons[i].id + '-24');
+            if (regex.test(id)) {
+              return icons[i];
+            }
+          }
+          return icons[0];
+        };
+
+        var findIconSize = function(olIcon, iconSizes) {
+          var scale = olIcon.getScale();
+          for (var i = 0; i < iconSizes.length; i++) {
+            if (scale == iconSizes[i].scale) {
+              return iconSizes[i];
+            }
+          }
+          return iconSizes[0];
+        };
+
+        var findColor = function(olColor, colors) {
+          var rgb = ol.color.asString(olColor.slice(0, 3));
+          for (var i = 0; i < colors.length; i++) {
+            if (rgb == ol.color.asString(colors[i].fill)) {
+              return colors[i];
+            }
+          }
+          return colors[0];
+        };
+
       return {
         restrict: 'A',
         templateUrl: 'components/draw/partials/draw.html',
@@ -26,6 +59,12 @@
           var draw, lastActiveTool;
           var map = scope.map;
           var source = new ol.source.Vector();
+          scope.pointTool = scope.options.tools[0];
+          scope.complexTools = [
+            scope.options.tools[1],
+            scope.options.tools[2]
+          ];
+
           var layer = new ol.layer.Vector({
             source: source,
             visible: true
@@ -72,19 +111,18 @@
             // Apply the select style
             var styles = scope.options.selectStyleFunction(evt.element);
             evt.element.setStyle(styles);
-            updateUseStyles(evt);
+            updateUseStyles();
             propsToggle(evt.element);
-            console.debug('add');
+            //console.debug('add');
           });
           select.getFeatures().on('remove', function(evt) {
             // Remove the select style
             var styles = evt.element.getStyle();
             styles.pop();
             evt.element.setStyle(styles);
-            //updateUseStyles(evt);
+            updateUseStyles();
             propsToggle();
-            console.debug('remove');
-
+            //console.debug('remove');
           });
           select.setActive(false);
           map.addInteraction(select);
@@ -97,7 +135,7 @@
           modify.setActive(false);
           map.addInteraction(modify);
 
-          // Activate the component 
+          // Activate the component
           var activate = function() {
             if (map.getLayers().getArray().indexOf(layer) == -1) {
               map.addLayer(layer);
@@ -128,7 +166,7 @@
               scope.options[tools[i].activeKey] = (tools[i].id == tool.id);
             }
           };
-          
+
           var deactivateTool = function(tool) {
             scope.options[tool.activeKey] = false;
           };
@@ -146,7 +184,7 @@
             });
 
             deregDrawEnd = draw.on('drawend', function(evt) {
-             
+
               // Set the definitve style of the feature
               var styles = scope.options.styleFunction(evt.feature);
               evt.feature.setStyle(styles);
@@ -170,14 +208,16 @@
           var activateSelectInteraction = function() {
             select.setActive(true);
             if (!gaBrowserSniffer.mobile) {
-              deregPointerMove = map.on('pointermove', updateCursorStyleDebounced);
+              deregPointerMove = map.on('pointermove',
+                  updateCursorStyleDebounced);
             }
             activateModifyInteraction();
           };
           var deactivateSelectInteraction = function() {
             deactivateModifyInteraction();
             if (deregPointerMove) {
-              ol.Observable.unByKey(deregPointerMove, updateCursorStyleDebounced);
+              ol.Observable.unByKey(deregPointerMove,
+                  updateCursorStyleDebounced);
             }
             select.getFeatures().clear();
             select.setActive(false);
@@ -211,55 +251,50 @@
             }
           };
 
-
           // Determines which styles are used by selected features
-          var updateUseStyles = function(evt) {
+          var updateUseStyles = function() {
             var features = select.getFeatures().getArray();
-            var useTextStyle = false;
+            var feature = features[0];
             var useIconStyle = false;
             var useColorStyle = false;
-            
-            // The select interaction select only one feature
-            for (var i = 0, ii = features.length; i < ii; i++) {
-              var styles = features[i].getStyleFunction()();
+            if (feature) {
+              // The select interaction select only one feature
+              var styles = feature.getStyleFunction()();
               var featStyle = styles[0];
               if (featStyle.getImage() instanceof ol.style.Icon) {
                 useIconStyle = true;
-
-                // Update html inputs.
-                scope.options.icon = findIcon(featStyle.getImage());
-                scope.options.iconSize = findIconSize(featStyle.getImage());
-                continue;
-
-              } else if (featStyle.getText()) {
-                useTextStyle = true;
-
-                // Update html inputs
-                scope.options.text = featStyle.getText().getText();
-                scope.options.color = findColor(featStyle.getText().getFill().getColor());
-
-              } else {
-
-                // Update html inputs
-                if (featStyle.getStroke()) {
-                  scope.options.color = findColor(featStyle.getStroke().getColor());
-                }
+                scope.options.icon = findIcon(featStyle.getImage(),
+                    scope.options.icons);
+                scope.options.iconSize = findIconSize(featStyle.getImage(),
+                    scope.options.iconSizes);
               }
-              useColorStyle = true;
+              if (featStyle.getText()) {
+                scope.options.name = featStyle.getText().getText();
+                //scope.options.textSize
+                //scope.options.textColor
+              }
+              if (featStyle.getStroke()) {
+                useColorStyle = true;
+                scope.options.color = findColor(
+                    featStyle.getStroke().getColor(), scope.options.colors);
+
+              }
+              scope.options.name = feature.get('name') || '';
+              scope.options.description = feature.get('description') || '';
+
+            } else {
+              scope.options.name = '';
+              scope.options.description = '';
             }
-            if (features.length) {
-              scope.options.description = features[0].get('description') || '';
-            }
-            scope.$evalAsync(function() {
-              scope.useTextStyle = useTextStyle;
-              scope.useIconStyle = useIconStyle;
-              scope.useColorStyle = useColorStyle;
-            });
+            scope.useIconStyle = useIconStyle;
+            scope.useColorStyle = useColorStyle;
+            scope.$evalAsync();
           };
 
           // Delete all features of the layer
           scope.deleteAllFeatures = function() {
             if (confirm($translate.instant('confirm_remove_all_features'))) {
+              select.getFeatures().clear();
               layer.getSource().clear();
             }
           };
@@ -304,23 +339,18 @@
           });
 
           scope.$watchGroup(['options.iconSize', 'options.icon',
-              'options.color', 'options.text', 'options.description'],
+              'options.color', 'options.name', 'options.description'],
               function() {
             updateSelectedFeatures();
           });
 
-          scope.$watch('options.isPointActive', function(active) {
-            if (active) {
+          scope.$watchGroup(['options.isPointActive', 'options.isLineActive',
+              'options.isPolygonActive'], function(values) {
+            if (values[0]) {
               activateDrawInteraction('Point');
-            }
-          });
-          scope.$watch('options.isLineActive', function(active) {
-            if (active) {
+            } else if (values[1]) {
               activateDrawInteraction('LineString');
-            }
-          });
-          scope.$watch('options.isPolygonActive', function(active) {
-            if (active) {
+            } else if (values[2]) {
               activateDrawInteraction('Polygon');
             }
           });
@@ -330,38 +360,6 @@
           });
 
           // Utils
-
-          // Find the corresponding style
-          var findIcon = function(olIcon) {
-            var id = olIcon.getSrc();
-            for (var i = 0; i < scope.options.icons.length; i++) {
-              var regex = new RegExp('/' + scope.options.icons[i].id + '-24');
-              if (regex.test(id)) {
-                return scope.options.icons[i];
-              }
-            }
-            return scope.options.iconSizes[0];
-          };
-
-          var findIconSize = function(olIcon) {
-            var scale = olIcon.getScale();
-            for (var i = 0; i < scope.options.iconSizes.length; i++) {
-              if (scale == scope.options.iconSizes[i].scale) {
-                return scope.options.iconSizes[i];
-              }
-            }
-            return scope.options.iconSizes[0];
-          };
-
-          var findColor = function(olColor) {
-            var rgb = ol.color.asString(olColor.slice(0, 3));
-            for (var i = 0; i < scope.options.colors.length; i++) {
-              if (rgb == ol.color.asString(scope.options.colors[i].fill)) {
-                return scope.options.colors[i];
-              }
-            }
-            return scope.options.colors[0];
-          };
 
           // Change cursor style on mouse move, only on desktop
           var updateCursorStyle = function(evt) {

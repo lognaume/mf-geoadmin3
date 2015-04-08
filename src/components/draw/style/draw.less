@@ -1,17 +1,48 @@
 [ga-draw] {
+  height: 44px;
+  width: 250px;
 
   .ga-draw-modify {
     width: 350px;
   }
 
   .ga-draw-buttons {
-    
-    button {
-      width: 44px;
+    position: absolute;
+    width: 290px;
+
+    .btn-group {
+      position: relative;
+      display: inline-block;
+    }
+    button.ga {
+      font-size: 40px;
       height: 44px;
-      margin: 0px 2px;
+      width: 44px;
       padding: 0px;
-      font-size: 44px;
+      margin: 0px;
+
+      & + ul {
+        padding-right: 2px;
+        li {
+          display: inline-block;
+          width: auto;
+          margin-left: 2px;
+        }
+      }
+    }
+    button.dropdown-toggle {
+     padding-right: 5px;
+     width: auto;
+    }
+
+    .ga-more {
+      position: absolute;
+      right: 0px;
+      bottom: 0px;
+
+      li .btn {
+        text-align: left;
+      }
     }
 
     .active {
@@ -26,7 +57,7 @@
   
   .popover-content {
     overflow:  auto;
-    max-height: 200px;
+    max-height: 150px;
   
     label, span {
       vertical-align: top;
@@ -38,11 +69,11 @@
 
     input, select, textarea {
       font-weight: normal;
-      width: 200px;
+      width: 160px;
     }
 
     span {
-     width: 70px;
+     width: 85px;
      padding-top: 5px;
      text-align: left;
     } 

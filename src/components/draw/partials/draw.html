@@ -1,11 +1,44 @@
 <div>
   <div class="ga-draw-buttons">
-    <button title="{{tool.description | translate}}"
-            class="btn btn-defaulti {{tool.iconClass}}"
-            ng-repeat="tool in options.tools"
-            ng-click="toggleTool($event, tool)"
-            ng-class="{'active': options[tool.activeKey]}">
-    </button>
+    <div class="btn-group">
+      <button title="{{pointTool.description | translate}}"
+              class="ga btn btn-default {{pointTool.iconClass}}"
+              ng-click="toggleTool($event, pointTool)"
+              ng-class="{'active': options[pointTool.activeKey]}">
+      </button>
+    </div>
+    <div class="btn-group">
+      <button type="button" class="ga btn btn-default dropdown-toggle icon-ga-edit"
+              data-toggle="dropdown" aria-expanded="false"><span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li ng-repeat="tool in complexTools">
+          <button title="{{tool.description | translate}}"
+                  class="ga btn btn-default {{tool.iconClass}}"
+                  ng-click="toggleTool($event, tool)"
+                  ng-class="{'active': options[tool.activeKey]}">
+          </button>
+        </li>
+      </ul>
+    </div>
+    <div class="ga-more pull-right">
+      <button type="button" class="btn btn-default dropdown-toggle"
+              data-toggle="dropdown" aria-expanded="false">More...<span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li><a href="" class="btn" disabled>Share</a></li>
+        <li><a href="" class="btn"
+               ng-disabled="!canExport()"
+               ng-click="exportKml($event)"
+               translate>export_kml</a></li>
+        <li class="divider"></li>
+        <li><a href="" class="btn"
+               ng-disabled="!canExport()"
+               ng-click="deleteAllFeatures()"
+               translate>draw_delete_description</a>
+        </li>
+      </ul>
+    </div>
   </div>
   <!--div class="ga-draw-interaction-btns" role="group">
       <button class="btn btn-default pull-right"
@@ -29,32 +62,36 @@
       <button class="ga-icon ga-btn icon-remove" ng-click="hide()"></button>
     </div>
     <div class="popover-content">
-      <label ng-if="options.isTextActive || useTextStyle">
-        <span translate>{{'modify_text_label'}}:</span> 
-        <input type="text" class="form-control" placeholder="{{'draw_text_placeholder' | translate}}"
-               ng-model="options.text"/>
+      <label>
+        <span>{{'modify_text_label' | translate}}:</span> 
+        <input type="text" class="form-control"
+               placeholder="{{'draw_text_placeholder' | translate}}"
+               ng-model="options.name"/>
       </label>
       
-      <label ng-if="!options.isModifyActive || useColorStyle || useIconStyle">
-        <span translate>{{'modify_description'}}:</span> 
-        <textarea class="form-control" placeholder="{{'draw_description_placeholder' | translate}}"
+      <label ng-if="useColorStyle || useIconStyle">
+        <span>{{'modify_description' | translate}}:</span> 
+        <textarea class="form-control"
+                  placeholder="{{'draw_description_placeholder' | translate}}"
                   ng-model="options.description"/>
       </label>
 
-      <label ng-if="options.isTextActive || options.isLineActive || options.isPolygonActive || useColorStyle">
-        <span translate>{{'modify_color_label'}}:</span> 
+      <label ng-if="options.isLineActive || options.isPolygonActive || useColorStyle">
+        <span>{{'modify_color_label' | translate}}:</span> 
         <select class="form-control"
                 ng-model="options.color" ng-options="options.translate.instant(c.name) for c in options.colors"></select>
       </label>
 
       <div class="ga-icons" ng-if="options.isPointActive || useIconStyle">
         <label>
-          <span translate>{{'modify_icon_size_label'}}:</span> 
+          <span>{{'modify_icon_size_label' | translate}}:</span> 
           <select class="form-control"
-                  ng-model="options.iconSize" ng-options="s.label for s in options.iconSizes"></select>
+                  ng-model="options.iconSize"
+                  ng-options="s.label for s in options.iconSizes">
+          </select>
         </label>          
         <label>
-          <span translate>{{'modify_icon_label'}}:</span> 
+          <span>{{'modify_icon_label' | translate}}:</span> 
           <div class="ga-choose-icon ga-icon-size-{{options.iconSize.value[0]}}">
             <img ng-class="{'ga-selected': (options.icon == i)}" 
                  draggable="false" 
