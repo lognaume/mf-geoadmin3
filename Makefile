@@ -141,6 +141,7 @@ ol: scripts/ol-geoadmin.json .build-artefacts/ol3 .build-artefacts/ol-requiremen
 	cd .build-artefacts/ol3; \
 	git reset HEAD --hard; \
 	git show; \
+	git cherry-pick 632205d902f8dcc1f03eb1dd1736d26a1b3ac2a3; \
 	cat ../../scripts/ga-ol3-style.exports >> src/ol/style/style.js; \
 	cat ../../scripts/ga-ol3-tilegrid.exports >> src/ol/tilegrid/tilegrid.js; \
 	cat ../../scripts/ga-ol3-tilerange.exports >> src/ol/tilerange.js; \

@@ -1,6 +1,6 @@
 // OpenLayers 3. See http://openlayers.org/
 // License: https://raw.githubusercontent.com/openlayers/ol3/master/LICENSE.md
-// Version: v3.4.0
+// Version: v3.4.0-1-ga62760f
 
 (function (root, factory) {
   if (typeof define === "function" && define.amd) {
@@ -35115,8 +35115,6 @@ ol.tilegrid.extentFromProjection = function(projection) {
 };
 goog.exportProperty(ol.tilegrid.TileGrid.prototype, 'getTileRangeForExtentAndZ',
     ol.tilegrid.TileGrid.prototype.getTileRangeForExtentAndZ);
-goog.exportProperty(ol.tilegrid.TileGrid.prototype, 'getResolutions',
-    ol.tilegrid.TileGrid.prototype.getResolutions);
 
 
 goog.provide('ol.source.Tile');
@@ -115210,6 +115208,7 @@ goog.require('ol.color');
 goog.require('ol.has');
 goog.require('ol.render.canvas');
 goog.require('ol.structs.IHasChecksum');
+goog.require('ol.style.AtlasManager');
 goog.require('ol.style.Fill');
 goog.require('ol.style.Image');
 goog.require('ol.style.ImageState');
